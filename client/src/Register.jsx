@@ -6,13 +6,17 @@ const Register = () => {
 
   return (
     <div className="bg-blue-50 h-screen flex items-center">
-      <form className="w-64 mx-auto ">
+      <form className="w-64 mx-auto mb-12">
         <input
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
           type="text"
           placeholder="username"
           className="block w-full rounded-sm p-2 mb-2 border"
         />
         <input
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           type="password"
           placeholder="password"
           className="block w-full rounded-sm p-2 mb-2 border"
