@@ -47,7 +47,7 @@ app.post('/register', async (req, res) => {
       }
 
       res.cookie('token', token).status(201).json({
-        _id: user._id,
+        id: user._id,
         message: 'User created successfully',
       });
     });
