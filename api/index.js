@@ -46,10 +46,10 @@ app.post('/register', async (req, res) => {
         res.status(500).json({ message: 'Error signing token', error: err });
       }
 
-      res
-        .cookie('token', token)
-        .sendStatus(201)
-        .json({ message: 'User created successfully' });
+      res.cookie('token', token).status(201).json({
+        _id: user._id,
+        message: 'User created successfully',
+      });
     });
   } catch (error) {
     console.log(error);
