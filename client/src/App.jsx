@@ -1,6 +1,6 @@
-import Register from './Register';
 import axios from 'axios';
 import UserContextProvider from './context/UserContext';
+import Routes from './components/Routes';
 
 function App() {
   axios.defaults.baseURL = 'http://localhost:4000';
@@ -8,7 +8,7 @@ function App() {
 
   return (
     <UserContextProvider>
-      <Register />
+      <Routes />
     </UserContextProvider>
   );
 }
