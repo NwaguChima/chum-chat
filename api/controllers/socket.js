@@ -1,5 +1,6 @@
 const ws = require('ws');
 
+// websocket function exported
 function handleSocket(server) {
   console.log('New connection');
   const wss = new ws.WebSocketServer({ server });
