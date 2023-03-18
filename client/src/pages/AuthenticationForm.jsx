@@ -10,7 +10,8 @@ const AuthenticationForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const url = isLoginOrRegister === 'register' ? '/register' : '/login';
+    const url =
+      isLoginOrRegister === 'register' ? '/auth/register' : '/auth/login';
 
     const response = await axios.post(url, { username, password });
     console.log('response', response);
