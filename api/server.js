@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const handleSocket = require('./controllers/socket');
 require('dotenv').config();
 
 const app = require('./index');
@@ -17,6 +18,8 @@ mongoose
 
 const port = process.env.PORT || 4000;
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log('Server listening on port 4000');
 });
+
+handleSocket(server);
