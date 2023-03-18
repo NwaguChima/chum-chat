@@ -31,6 +31,16 @@ app.get('/test', (req, res) => {
   res.json({ message: 'Hello World!' });
 });
 
+app.get('/profile', (req, res) => {
+  const { token } = res.cookie;
+
+  jwt.verify(token, process.env.JWT_SECRET, {}, (err, userData) => {
+    if (err) throw err;
+
+    res.json(userData);
+  });
+});
+
 app.post('/register', async (req, res) => {
   const { username, password } = req.body;
 
@@ -48,6 +58,7 @@ app.post('/register', async (req, res) => {
 
       res.cookie('token', token).status(201).json({
         id: user._id,
+        username,
         message: 'User created successfully',
       });
     });
