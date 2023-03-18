@@ -4,6 +4,7 @@ require('dotenv').config();
 const User = require('./models/User');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 
 mongoose
   .connect(process.env.MONGO_URI, {
@@ -20,25 +21,30 @@ mongoose
 const app = express();
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: [process.env.CLIENT_URL, 'http://127.0.0.1:5173'],
     credentials: true,
   })
 );
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.get('/test', (req, res) => {
   res.json({ message: 'Hello World!' });
 });
 
 app.get('/profile', (req, res) => {
-  const { token } = res.cookie;
+  const token = req.cookies?.token;
 
-  jwt.verify(token, process.env.JWT_SECRET, {}, (err, userData) => {
-    if (err) throw err;
+  if (token) {
+    jwt.verify(token, process.env.JWT_SECRET, {}, (err, userData) => {
+      if (err) throw err;
 
-    res.json(userData);
-  });
+      res.json(userData);
+    });
+  } else {
+    res.status(401).json('no token');
+  }
 });
 
 app.post('/register', async (req, res) => {
@@ -50,18 +56,24 @@ app.post('/register', async (req, res) => {
       password,
     });
 
-    jwt.sign({ userId: user._id }, process.env.JWT_SECRET, (err, token) => {
-      if (err) {
-        console.log(err);
-        res.status(500).json({ message: 'Error signing token', error: err });
-      }
+    jwt.sign(
+      { userId: user._id, username },
+      process.env.JWT_SECRET,
+      (err, token) => {
+        if (err) {
+          console.log(err);
+          res.status(500).json({ message: 'Error signing token', error: err });
+        }
 
-      res.cookie('token', token).status(201).json({
-        id: user._id,
-        username,
-        message: 'User created successfully',
-      });
-    });
+        res
+          .cookie('token', token, { sameSite: 'none', secure: true })
+          .status(201)
+          .json({
+            id: user._id,
+            message: 'User created successfully',
+          });
+      }
+    );
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: 'Error registering user', error });

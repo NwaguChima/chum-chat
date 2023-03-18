@@ -5,7 +5,7 @@ import Register from '../pages/Register';
 const Routes = () => {
   const { username, id } = useContext(UserContext);
 
-  if (username && id) return <h1>Logged in</h1>;
+  if (username && id) return <h1>Logged in {username}</h1>;
 
   return <Register />;
 };
