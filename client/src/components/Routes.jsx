@@ -1,11 +1,12 @@
 import React, { useContext } from 'react';
 import { UserContext } from '../context/UserContext';
 import AuthenticationForm from '../pages/AuthenticationForm';
+import Chat from './Chat';
 
 const Routes = () => {
   const { username, id } = useContext(UserContext);
 
-  if (username && id) return <h1>Logged in {username}</h1>;
+  if (id) return <Chat />;
 
   return <AuthenticationForm />;
 };
