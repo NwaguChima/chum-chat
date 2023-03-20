@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 const Chat = () => {
   const [ws, setWs] = useState(null);
+  const [onlineUsers, setOnlineUsers] = useState({});
 
   useEffect(() => {
     const wsClient = new WebSocket('ws://localhost:4000');
@@ -10,8 +11,22 @@ const Chat = () => {
     wsClient.addEventListener('message', handleMessage);
   }, []);
 
-  function handleMessage(e) {
-    console.log('new message-', e);
+  function showOnlineUsers(onlineArr) {
+    const people = {};
+
+    onlineArr.forEach(({ userId, username }) => {
+      people[userId] = username;
+    });
+
+    setOnlineUsers(people);
+  }
+
+  function handleMessage(ev) {
+    const messageData = JSON.parse(ev.data);
+
+    if ('online' in messageData) {
+      showOnlineUsers(messageData.online);
+    }
   }
 
   return (
