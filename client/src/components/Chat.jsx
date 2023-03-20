@@ -11,7 +11,7 @@ const Chat = () => {
   }, []);
 
   function handleMessage(e) {
-    console.log('new message', e);
+    console.log('new message-', e);
   }
 
   return (
