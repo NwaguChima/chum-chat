@@ -4,6 +4,7 @@ import Avatar from './Avatar';
 const Chat = () => {
   const [ws, setWs] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState({});
+  const [selectedContact, setSelectedContact] = useState(null);
 
   useEffect(() => {
     const wsClient = new WebSocket('ws://localhost:4000');
@@ -30,10 +31,14 @@ const Chat = () => {
     }
   }
 
+  function handleSelectContact(userId) {
+    setSelectedContact(userId);
+  }
+
   return (
     <div className="flex h-screen">
-      <div className="bg-white w-1/3 pl-4 pt-4">
-        <div className="text-blue-600 font-bold text-xl mb-4 flex gap-2 items-center">
+      <div className="bg-white w-1/3">
+        <div className="text-blue-600 font-bold text-xl mb-4 flex gap-2 items-center p-4">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -52,11 +57,14 @@ const Chat = () => {
         </div>
         {Object.keys(onlineUsers).map((userId) => (
           <div
+            onClick={() => handleSelectContact(userId)}
             key={userId}
-            className="border-b border-gray-100 py-2 flex items-center gap-2"
+            className={`border-b border-gray-100 py-2 pl-4 flex items-center gap-2 cursor-pointer
+            transition duration-200 ease-in-out hover:bg-blue-50
+             ${selectedContact === userId ? 'bg-blue-50 pl-6' : ''}`}
           >
             <Avatar userId={userId} username={onlineUsers[userId]} />
-            <span>{onlineUsers[userId]}</span>
+            <span className="text-gray-800">{onlineUsers[userId]}</span>
           </div>
         ))}
       </div>
