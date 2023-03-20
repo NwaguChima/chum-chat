@@ -26,6 +26,19 @@ function handleSocket(server) {
         });
       }
     }
+
+    [...wss.clients].forEach((client) => {
+      if (client.readyState === ws.OPEN) {
+        client.send(
+          JSON.stringify({
+            online: [...wss.clients].map((c) => ({
+              username: c.username,
+              userId: c.userId,
+            })),
+          })
+        );
+      }
+    });
   });
 }
 
