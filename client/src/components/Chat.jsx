@@ -39,6 +39,7 @@ const Chat = () => {
     if ('online' in messageData) {
       showOnlineUsers(messageData.online);
     } else {
+      console.log('messageData--->>>', messageData);
       setMessages((prevMessages) => [
         ...prevMessages,
         { message: messageData, isMe: false },
@@ -67,7 +68,6 @@ const Chat = () => {
     setMessages((prevMessages) => [...prevMessages, { message, isMe: true }]);
   }
 
-  console.log('messages', messages);
   return (
     <div className="flex h-screen">
       <div className="bg-white w-1/3">

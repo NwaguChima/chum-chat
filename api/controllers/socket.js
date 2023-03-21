@@ -1,5 +1,6 @@
 const ws = require('ws');
 const jwt = require('jsonwebtoken');
+const Message = require('../models/Message');
 
 function handleSocket(server) {
   console.log('New connection');
@@ -28,12 +29,18 @@ function handleSocket(server) {
       }
     }
 
-    connection.on('message', (message) => {
+    connection.on('message', async (message) => {
       const decodedMessage = JSON.parse(message);
       let recipient = decodedMessage?.recipient;
       let messageData = decodedMessage?.textData;
 
       if (recipient && messageData) {
+        const messageDoc = await Message.create({
+          sender: connection.userId,
+          recipient,
+          text: messageData,
+        });
+
         [...wss.clients]
           .filter((client) => client.userId === recipient)
           .forEach((client) => {
@@ -42,6 +49,8 @@ function handleSocket(server) {
                 JSON.stringify({
                   textData: messageData,
                   sender: connection.userId,
+                  recipient,
+                  id: messageDoc._id,
                 })
               );
             }
