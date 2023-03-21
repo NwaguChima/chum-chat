@@ -37,6 +37,8 @@ const Chat = () => {
 
     if ('online' in messageData) {
       showOnlineUsers(messageData.online);
+    } else {
+      console.log('Message received', messageData);
     }
   }
 

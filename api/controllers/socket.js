@@ -31,7 +31,7 @@ function handleSocket(server) {
     connection.on('message', (message) => {
       const decodedMessage = JSON.parse(message);
       let recipient = decodedMessage?.recipient;
-      let messageData = decodedMessage?.message;
+      let messageData = decodedMessage?.text;
 
       if (recipient && messageData) {
         [...wss.clients]
