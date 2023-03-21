@@ -1,12 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import Avatar from './Avatar';
 import Logo from './Logo';
+import { UserContext } from '../context/UserContext';
 
 const Chat = () => {
   const initialized = useRef(false);
   const [ws, setWs] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState({});
   const [selectedContact, setSelectedContact] = useState(null);
+  const { username, id } = useContext(UserContext);
 
   useEffect(() => {
     if (!initialized.current) {
@@ -44,18 +46,24 @@ const Chat = () => {
     <div className="flex h-screen">
       <div className="bg-white w-1/3">
         <Logo />
-        {Object.keys(onlineUsers).map((userId) => (
-          <div
-            onClick={() => handleSelectContact(userId)}
-            key={userId}
-            className={`border-b border-gray-100 py-2 pl-4 flex items-center gap-2 cursor-pointer
+        {Object.keys(onlineUsers).map((userId) => {
+          if (userId === id) {
+            return null;
+          }
+
+          return (
+            <div
+              onClick={() => handleSelectContact(userId)}
+              key={userId}
+              className={`border-b border-gray-100 py-2 pl-4 flex items-center gap-2 cursor-pointer
             transition duration-200 ease-in-out hover:bg-blue-50
              ${selectedContact === userId ? 'bg-blue-50 pl-6' : ''}`}
-          >
-            <Avatar userId={userId} username={onlineUsers[userId]} />
-            <span className="text-gray-800">{onlineUsers[userId]}</span>
-          </div>
-        ))}
+            >
+              <Avatar userId={userId} username={onlineUsers[userId]} />
+              <span className="text-gray-800">{onlineUsers[userId]}</span>
+            </div>
+          );
+        })}
       </div>
       <div className="flex flex-col bg-blue-100 w-2/3 p-2">
         <div className="flex-grow">Messages</div>
