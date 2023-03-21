@@ -31,7 +31,7 @@ function handleSocket(server) {
     connection.on('message', (message) => {
       const decodedMessage = JSON.parse(message);
       let recipient = decodedMessage?.recipient;
-      let messageData = decodedMessage?.text;
+      let messageData = decodedMessage?.textData;
 
       if (recipient && messageData) {
         [...wss.clients]
@@ -40,7 +40,7 @@ function handleSocket(server) {
             if (client.readyState === ws.OPEN) {
               client.send(
                 JSON.stringify({
-                  message: messageData,
+                  textData: messageData,
                   sender: connection.userId,
                 })
               );

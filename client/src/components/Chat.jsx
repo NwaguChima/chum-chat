@@ -11,6 +11,7 @@ const Chat = () => {
   const { username, id } = useContext(UserContext);
 
   const [newMessageText, setNewMessageText] = useState('');
+  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     if (!initialized.current) {
@@ -38,7 +39,10 @@ const Chat = () => {
     if ('online' in messageData) {
       showOnlineUsers(messageData.online);
     } else {
-      console.log('Message received', messageData);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { message: messageData, isMe: false },
+      ]);
     }
   }
 
@@ -55,13 +59,15 @@ const Chat = () => {
 
     const message = {
       recipient: selectedContact,
-      text: newMessageText,
+      textData: newMessageText,
     };
 
     ws.send(JSON.stringify(message));
     setNewMessageText('');
+    setMessages((prevMessages) => [...prevMessages, { message, isMe: true }]);
   }
 
+  console.log('messages', messages);
   return (
     <div className="flex h-screen">
       <div className="bg-white w-1/3">
@@ -93,7 +99,11 @@ const Chat = () => {
       <div className="flex flex-col bg-blue-100 w-2/3 p-2">
         <div className="flex-grow">
           {selectedContact ? (
-            <div></div>
+            <div>
+              {messages.map(({ message, isMe }, index) => (
+                <div>{message.textData}</div>
+              ))}
+            </div>
           ) : (
             <div className="flex items-center justify-center h-full">
               <p className="text-gray-400">&larr; Select A Person To Chat</p>
