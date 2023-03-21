@@ -53,7 +53,6 @@ const Chat = () => {
 
     const message = {
       recipient: selectedContact,
-      from: id,
       text: newMessageText,
     };
 

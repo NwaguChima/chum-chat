@@ -6,6 +6,7 @@ function handleSocket(server) {
   const wss = new ws.WebSocketServer({ server });
 
   wss.on('connection', (connection, req) => {
+    // Get user from token
     const cookies = req.headers.cookie;
     if (cookies) {
       const tokenCookieStr = cookies
@@ -27,6 +28,28 @@ function handleSocket(server) {
       }
     }
 
+    connection.on('message', (message) => {
+      const decodedMessage = JSON.parse(message);
+      let recipient = decodedMessage?.recipient;
+      let messageData = decodedMessage?.message;
+
+      if (recipient && messageData) {
+        [...wss.clients]
+          .filter((client) => client.userId === recipient)
+          .forEach((client) => {
+            if (client.readyState === ws.OPEN) {
+              client.send(
+                JSON.stringify({
+                  message: messageData,
+                  sender: connection.userId,
+                })
+              );
+            }
+          });
+      }
+    });
+
+    // Notify all clients about new user online
     [...wss.clients].forEach((client) => {
       if (client.readyState === ws.OPEN) {
         client.send(
