@@ -71,7 +71,15 @@ const Chat = () => {
         })}
       </div>
       <div className="flex flex-col bg-blue-100 w-2/3 p-2">
-        <div className="flex-grow">Messages</div>
+        <div className="flex-grow">
+          {selectedContact ? (
+            <div></div>
+          ) : (
+            <div className="flex items-center justify-center h-full">
+              <p className="text-gray-400">&larr; Select A Person To Chat</p>
+            </div>
+          )}
+        </div>
         <div className="flex gap-2">
           <input
             type="text"
