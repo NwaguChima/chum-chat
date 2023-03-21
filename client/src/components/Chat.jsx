@@ -1,17 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Avatar from './Avatar';
 import Logo from './Logo';
 
 const Chat = () => {
+  const initialized = useRef(false);
   const [ws, setWs] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState({});
   const [selectedContact, setSelectedContact] = useState(null);
 
   useEffect(() => {
-    const wsClient = new WebSocket('ws://localhost:4000');
-    setWs(wsClient);
+    if (!initialized.current) {
+      initialized.current = true;
 
-    wsClient.addEventListener('message', handleMessage);
+      const wsClient = new WebSocket('ws://localhost:4000');
+      setWs(wsClient);
+      wsClient.addEventListener('message', handleMessage);
+    }
   }, []);
 
   function showOnlineUsers(onlineArr) {
