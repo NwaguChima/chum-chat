@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const userRoute = require('./routes/userRoutes');
+const messageRoute = require('./routes/messageRoutes');
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.get('/test', (req, res) => {
 });
 
 app.use('/auth', userRoute);
+app.use('/messages', messageRoute);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));

@@ -3,6 +3,6 @@ const messageController = require('../controllers/messageController');
 
 const router = express.Router();
 
-router.get('/messages/:userId', messageController.profile);
+router.get('/:userId', messageController.profile);
 
 module.exports = router;
