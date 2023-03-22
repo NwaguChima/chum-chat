@@ -6,7 +6,40 @@ function handleSocket(server) {
   console.log('New connection');
   const wss = new ws.WebSocketServer({ server });
 
+  function notifyAboutOnlinePeople() {
+    [...wss.clients].forEach((client) => {
+      if (client.readyState === ws.OPEN) {
+        client.send(
+          JSON.stringify({
+            online: [...wss.clients].map((c) => ({
+              username: c.username,
+              userId: c.userId,
+            })),
+          })
+        );
+      }
+    });
+  }
+
   wss.on('connection', (connection, req) => {
+    connection.isAlive = true;
+
+    connection.timer = setInterval(() => {
+      connection.ping();
+
+      connection.deathTimer = setTimeout(() => {
+        if (connection.isAlive) {
+          connection.isAlive = false;
+          connection.terminate();
+          notifyAboutOnlinePeople();
+        }
+      }, 1000);
+    }, 5000);
+
+    connection.on('pong', () => {
+      clearTimeout(connection.deathTimer);
+    });
+
     // Get user from token
     const cookies = req.headers.cookie;
     if (cookies) {
@@ -59,18 +92,11 @@ function handleSocket(server) {
     });
 
     // Notify all clients about new user online
-    [...wss.clients].forEach((client) => {
-      if (client.readyState === ws.OPEN) {
-        client.send(
-          JSON.stringify({
-            online: [...wss.clients].map((c) => ({
-              username: c.username,
-              userId: c.userId,
-            })),
-          })
-        );
-      }
-    });
+    notifyAboutOnlinePeople();
+  });
+
+  wss.on('close', (data) => {
+    console.log('Connection closed', data);
   });
 }
 
