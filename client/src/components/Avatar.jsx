@@ -1,10 +1,9 @@
 import React from 'react';
 
-const Avatar = ({ userId, username }) => {
+const Avatar = ({ userId, username, online }) => {
   const colors = [
     'bg-red-200',
     'bg-blue-200',
-    'bg-green-200',
     'bg-yellow-200',
     'bg-purple-200',
     'bg-pink-200',
@@ -18,9 +17,12 @@ const Avatar = ({ userId, username }) => {
 
   return (
     <div
-      className={`w-8 h-8 rounded-full text-center flex items-center justify-center ${colors[colorIndex]}`}
+      className={`w-8 h-8 relative rounded-full text-center flex items-center justify-center ${colors[colorIndex]}`}
     >
       <span className="opacity-50">{username[0].toUpperCase()}</span>
+      {online && (
+        <small className="absolute w-3 h-3 bg-green-400 -bottom-1 right-0 rounded-full border border-white" />
+      )}
     </div>
   );
 };
