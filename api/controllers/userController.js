@@ -89,6 +89,13 @@ const register = async (req, res) => {
   }
 };
 
+const logout = async (req, res) => {
+  res
+    .clearCookie('token', { sameSite: 'none', secure: true })
+    .status(200)
+    .json({ message: 'User logged out successfully' });
+};
+
 const getUsers = async (req, res) => {
   try {
     const users = await User.find({}, { _id: 1, username: 1 });
@@ -104,4 +111,5 @@ module.exports = {
   login,
   register,
   getUsers,
+  logout,
 };
