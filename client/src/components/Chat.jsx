@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import Avatar from './Avatar';
 import Logo from './Logo';
 import { UserContext } from '../context/UserContext';
+import axios from 'axios';
 
 const Chat = () => {
   const initialized = useRef(false);
@@ -59,10 +60,11 @@ const Chat = () => {
 
   async function handleMessageSend(ev) {
     ev.preventDefault();
+    if (!newMessageText.trim()) return;
 
     const message = {
       recipient: selectedContact,
-      textData: newMessageText,
+      textData: newMessageText.trim(),
       sender: id,
     };
 
@@ -80,6 +82,10 @@ const Chat = () => {
 
   useEffect(() => {
     if (selectedContact) {
+      axios.get(`/messages/${selectedContact}`).then((res) => {
+        // setMessages(res.data);
+        console.log('res.data--->>>', res.data);
+      });
     }
   }, [selectedContact]);
 
