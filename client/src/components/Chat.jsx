@@ -78,6 +78,11 @@ const Chat = () => {
     }
   }, [messages]);
 
+  useEffect(() => {
+    if (selectedContact) {
+    }
+  }, [selectedContact]);
+
   return (
     <div className="flex h-screen">
       <div className="bg-white w-1/3">
