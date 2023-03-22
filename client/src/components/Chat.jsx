@@ -93,6 +93,10 @@ const Chat = () => {
   }, [messages]);
 
   useEffect(() => {
+    axios.get('/users').then((res) => {});
+  }, [onlineUsers]);
+
+  useEffect(() => {
     if (selectedContact) {
       axios
         .get(`/messages/${selectedContact}`)
