@@ -13,6 +13,8 @@ const Chat = () => {
   const [newMessageText, setNewMessageText] = useState('');
   const [messages, setMessages] = useState([]);
 
+  const divUnderMessages = useRef(null);
+
   useEffect(() => {
     if (!initialized.current) {
       initialized.current = true;
@@ -61,12 +63,20 @@ const Chat = () => {
     const message = {
       recipient: selectedContact,
       textData: newMessageText,
+      sender: id,
     };
 
     ws.send(JSON.stringify(message));
     setNewMessageText('');
     setMessages((prevMessages) => [...prevMessages, { message, isMe: true }]);
   }
+
+  useEffect(() => {
+    let div = divUnderMessages?.current;
+    if (div) {
+      div.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+  }, [messages]);
 
   return (
     <div className="flex h-screen">
@@ -99,10 +109,27 @@ const Chat = () => {
       <div className="flex flex-col bg-blue-100 w-2/3 p-2">
         <div className="flex-grow">
           {selectedContact ? (
-            <div>
-              {messages.map(({ message, isMe }, index) => (
-                <div>{message.textData}</div>
-              ))}
+            <div className="relative h-full">
+              <div className="overflow-y-scroll absolute inset-0">
+                {messages.map(({ message }, index) => (
+                  <div
+                    className={`${
+                      message.sender === id ? 'text-right' : 'text-left'
+                    }`}
+                  >
+                    <div
+                      className={`inline-block text-left p-2 my-2 rounded-md text-sm ${
+                        message.sender === id
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-white text-gray-500'
+                      }`}
+                    >
+                      {message.textData}
+                    </div>
+                  </div>
+                ))}
+                <div ref={divUnderMessages}></div>
+              </div>
             </div>
           ) : (
             <div className="flex items-center justify-center h-full">
