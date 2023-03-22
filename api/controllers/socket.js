@@ -32,7 +32,7 @@ function handleSocket(server) {
     connection.on('message', async (message) => {
       const decodedMessage = JSON.parse(message);
       let recipient = decodedMessage?.recipient;
-      let messageData = decodedMessage?.textData;
+      let messageData = decodedMessage?.text;
 
       if (recipient && messageData) {
         const messageDoc = await Message.create({
@@ -47,10 +47,10 @@ function handleSocket(server) {
             if (client.readyState === ws.OPEN) {
               client.send(
                 JSON.stringify({
-                  textData: messageData,
+                  text: messageData,
                   sender: connection.userId,
                   recipient,
-                  id: messageDoc._id,
+                  _id: messageDoc._id,
                 })
               );
             }

@@ -22,7 +22,7 @@ const getMessage = async (req, res) => {
         { sender: user.userId, recipient: userId },
         { sender: userId, recipient: user.userId },
       ],
-    }).sort({ createdAt: -1 });
+    }).sort({ createdAt: 1 });
 
     res.status(200).json(messages);
   } catch (error) {

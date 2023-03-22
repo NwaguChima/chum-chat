@@ -57,11 +57,7 @@ const Chat = () => {
     if ('online' in messageData) {
       showOnlineUsers(messageData.online);
     } else {
-      console.log('messageData--->>>', messageData);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { message: messageData, isMe: false },
-      ]);
+      setMessages((prevMessages) => [...prevMessages, messageData]);
     }
   }
 
@@ -79,13 +75,14 @@ const Chat = () => {
 
     const message = {
       recipient: selectedContact,
-      textData: newMessageText.trim(),
+      text: newMessageText.trim(),
       sender: id,
+      _id: Date.now(),
     };
 
     ws.send(JSON.stringify(message));
     setNewMessageText('');
-    setMessages((prevMessages) => [...prevMessages, { message, isMe: true }]);
+    setMessages((prevMessages) => [...prevMessages, message]);
   }
 
   useEffect(() => {
@@ -97,10 +94,15 @@ const Chat = () => {
 
   useEffect(() => {
     if (selectedContact) {
-      axios.get(`/messages/${selectedContact}`).then((res) => {
-        // setMessages(res.data);
-        console.log('res.data--->>>', res.data);
-      });
+      axios
+        .get(`/messages/${selectedContact}`)
+        .then((res) => {
+          let response = res.data;
+          setMessages(response);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   }, [selectedContact]);
 
@@ -137,23 +139,26 @@ const Chat = () => {
           {selectedContact ? (
             <div className="relative h-full">
               <div className="overflow-y-scroll absolute inset-0">
-                {messages.map(({ message }, index) => (
-                  <div
-                    className={`${
-                      message.sender === id ? 'text-right' : 'text-left'
-                    }`}
-                  >
+                {messages.map((message) => {
+                  return (
                     <div
-                      className={`inline-block text-left p-2 my-2 rounded-md text-sm ${
-                        message.sender === id
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-white text-gray-500'
+                      key={message._id}
+                      className={`${
+                        message.sender === id ? 'text-right' : 'text-left'
                       }`}
                     >
-                      {message.textData}
+                      <div
+                        className={`inline-block text-left p-2 my-2 rounded-md text-sm ${
+                          message.sender === id
+                            ? 'bg-blue-500 text-white'
+                            : 'bg-white text-gray-500'
+                        }`}
+                      >
+                        {message.text}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
                 <div ref={divUnderMessages}></div>
               </div>
             </div>
