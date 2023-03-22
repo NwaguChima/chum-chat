@@ -89,7 +89,17 @@ const Chat = () => {
   }
 
   function handleLogout() {
-    axios.post('/auth/logout').then((res) => {});
+    axios
+      .post('/auth/logout')
+      .then((res) => {
+        if (res.status === 200) {
+          setUsername('');
+          setId('');
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   useEffect(() => {
