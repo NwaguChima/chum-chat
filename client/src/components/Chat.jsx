@@ -19,12 +19,27 @@ const Chat = () => {
   useEffect(() => {
     if (!initialized.current) {
       initialized.current = true;
-
-      const wsClient = new WebSocket('ws://localhost:4000');
-      setWs(wsClient);
-      wsClient.addEventListener('message', handleMessage);
+      connectToWs();
     }
   }, []);
+
+  function connectToWs() {
+    const wsClient = new WebSocket('ws://localhost:4000');
+    setWs(wsClient);
+    let timer;
+
+    wsClient.addEventListener('message', handleMessage);
+    wsClient.addEventListener('close', () => {
+      console.log('Connection closed. Reconnecting...');
+      timer = setTimeout(connectToWs, 2000);
+    });
+
+    // cleanup
+    return () => {
+      wsClient.close();
+      clearTimeout(timer);
+    };
+  }
 
   function showOnlineUsers(onlineArr) {
     const people = {};
