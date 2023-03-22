@@ -30,6 +30,8 @@ function handleSocket(server) {
       connection.deathTimer = setTimeout(() => {
         if (connection.isAlive) {
           connection.isAlive = false;
+
+          clearInterval(connection.timer);
           connection.terminate();
           notifyAboutOnlinePeople();
         }
