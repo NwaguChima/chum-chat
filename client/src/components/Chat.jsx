@@ -11,7 +11,7 @@ const Chat = () => {
   const [ws, setWs] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState({});
   const [selectedContact, setSelectedContact] = useState(null);
-  const { username, id } = useContext(UserContext);
+  const { username, id, setId, setUsername } = useContext(UserContext);
 
   const [newMessageText, setNewMessageText] = useState('');
   const [messages, setMessages] = useState([]);
@@ -88,6 +88,10 @@ const Chat = () => {
     setMessages((prevMessages) => [...prevMessages, message]);
   }
 
+  function handleLogout() {
+    axios.post('/auth/logout').then((res) => {});
+  }
+
   useEffect(() => {
     let div = divUnderMessages?.current;
     if (div) {
@@ -133,40 +137,50 @@ const Chat = () => {
 
   return (
     <div className="flex h-screen">
-      <div className="bg-white w-1/3">
-        <Logo />
-        {Object.keys(onlineUsers).map((userId) => {
-          if (userId === id) {
-            return null;
-          }
+      <div className="bg-white w-1/3 flex flex-col">
+        <div className="flex-grow">
+          <Logo />
+          {Object.keys(onlineUsers).map((userId) => {
+            if (userId === id) {
+              return null;
+            }
 
-          return (
-            <ContactList
-              key={userId}
-              userId={userId}
-              username={onlineUsers[userId] || 'anonymous'}
-              onClick={() => handleSelectContact(userId)}
-              selected={userId === selectedContact}
-              online={true}
-            />
-          );
-        })}
-        {Object.keys(offlineUsers).map((userId) => {
-          if (userId === id) {
-            return null;
-          }
+            return (
+              <ContactList
+                key={userId}
+                userId={userId}
+                username={onlineUsers[userId] || 'anonymous'}
+                onClick={() => handleSelectContact(userId)}
+                selected={userId === selectedContact}
+                online={true}
+              />
+            );
+          })}
+          {Object.keys(offlineUsers).map((userId) => {
+            if (userId === id) {
+              return null;
+            }
 
-          return (
-            <ContactList
-              key={userId}
-              userId={userId}
-              username={offlineUsers[userId].username}
-              onClick={handleSelectContact}
-              selected={userId === selectedContact}
-              online={false}
-            />
-          );
-        })}
+            return (
+              <ContactList
+                key={userId}
+                userId={userId}
+                username={offlineUsers[userId].username}
+                onClick={handleSelectContact}
+                selected={userId === selectedContact}
+                online={false}
+              />
+            );
+          })}
+        </div>
+        <div className="p-2 text-center">
+          <button
+            onClick={handleLogout}
+            className="text-sm text-gray-500 bg-blue-100 py-1 px-2 border rounded-sm"
+          >
+            Logout
+          </button>
+        </div>
       </div>
       <div className="flex flex-col bg-blue-100 w-2/3 p-2">
         <div className="flex-grow">
