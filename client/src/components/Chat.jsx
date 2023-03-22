@@ -13,6 +13,7 @@ const Chat = () => {
 
   const [newMessageText, setNewMessageText] = useState('');
   const [messages, setMessages] = useState([]);
+  const [offlineUsers, setOfflineUsers] = useState({});
 
   const divUnderMessages = useRef(null);
 
@@ -93,7 +94,17 @@ const Chat = () => {
   }, [messages]);
 
   useEffect(() => {
-    axios.get('/users').then((res) => {});
+    let offlinePeople = {};
+    axios.get('/auth/users').then((res) => {
+      const offlineUsers = res.data.filter((user) => {
+        if (user._id !== id && !onlineUsers[user._id]) {
+          offlinePeople[user._id] = user;
+          return user;
+        }
+      });
+
+      setOfflineUsers(offlinePeople);
+    });
   }, [onlineUsers]);
 
   useEffect(() => {
@@ -134,7 +145,7 @@ const Chat = () => {
                 <Avatar
                   online={true}
                   userId={userId}
-                  username={onlineUsers[userId]}
+                  username={onlineUsers[userId] || 'User'}
                 />
                 <span className="text-gray-800">{onlineUsers[userId]}</span>
               </div>
