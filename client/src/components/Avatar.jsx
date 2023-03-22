@@ -20,8 +20,10 @@ const Avatar = ({ userId, username, online }) => {
       className={`w-8 h-8 relative rounded-full text-center flex items-center justify-center ${colors[colorIndex]}`}
     >
       <span className="opacity-50">{username[0].toUpperCase()}</span>
-      {online && (
+      {online ? (
         <small className="absolute w-3 h-3 bg-green-400 -bottom-1 right-0 rounded-full border border-white" />
+      ) : (
+        <small className="absolute w-3 h-3 bg-gray-400 -bottom-1 right-0 rounded-full border border-white" />
       )}
     </div>
   );
