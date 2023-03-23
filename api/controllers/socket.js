@@ -91,8 +91,10 @@ function handleSocket(server) {
           sender: connection.userId,
           recipient,
           text: messageData,
-          file: file.data ? filename : null,
+          file: file ? filename : null,
         });
+
+        console.log('Message received', messageDoc);
 
         [...wss.clients]
           .filter((client) => client.userId === recipient)
