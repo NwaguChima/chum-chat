@@ -59,7 +59,9 @@ const Chat = () => {
     if ('online' in messageData) {
       showOnlineUsers(messageData.online);
     } else {
-      setMessages((prevMessages) => [...prevMessages, messageData]);
+      if (messageData.sender === selectedContact) {
+        setMessages((prevMessages) => [...prevMessages, messageData]);
+      }
     }
   }
 
