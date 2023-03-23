@@ -7,7 +7,6 @@ import ContactList from './ContactList';
 
 const Chat = () => {
   const initialized = useRef(false);
-  const initialized2 = useRef(false);
   const [ws, setWs] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState({});
   const [selectedContact, setSelectedContact] = useState(null);
@@ -76,6 +75,7 @@ const Chat = () => {
     if (ev) {
       ev.preventDefault();
     }
+
     if (!newMessageText.trim() && !file.data) return;
 
     const message = {
@@ -88,12 +88,11 @@ const Chat = () => {
 
     ws.send(JSON.stringify(message));
 
-    if (file.data) {
+    if (file) {
       axios
         .get(`/messages/${selectedContact}`)
         .then((res) => {
           let response = res.data;
-          console.log('response--->>>***&&&', response);
           setMessages(response);
         })
         .catch((err) => {
