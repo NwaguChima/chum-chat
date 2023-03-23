@@ -1,6 +1,7 @@
 const ws = require('ws');
 const jwt = require('jsonwebtoken');
 const Message = require('../models/Message');
+const fs = require('fs');
 
 function handleSocket(server) {
   console.log('New connection');
@@ -68,12 +69,29 @@ function handleSocket(server) {
       const decodedMessage = JSON.parse(message);
       let recipient = decodedMessage?.recipient;
       let messageData = decodedMessage?.text;
+      let file = decodedMessage?.file;
+      let filename = null;
 
-      if (recipient && messageData) {
+      if (file?.data) {
+        const parts = file.name.split('.');
+        const extension = parts[parts.length - 1];
+
+        filename = `${Date.now()}.${extension}`;
+        const path = __dirname + `/../uploads/${filename}`;
+
+        const bufferData = Buffer.from(file?.data.split(',')[1], 'base64');
+
+        fs.writeFile(path, bufferData, 'base64', (err) => {
+          console.log('File saved:', path);
+        });
+      }
+
+      if (recipient && (messageData || file?.data)) {
         const messageDoc = await Message.create({
           sender: connection.userId,
           recipient,
           text: messageData,
+          file: file.data ? filename : null,
         });
 
         [...wss.clients]
@@ -85,6 +103,7 @@ function handleSocket(server) {
                   text: messageData,
                   sender: connection.userId,
                   recipient,
+                  file: file?.data ? filename : null,
                   _id: messageDoc._id,
                 })
               );

@@ -72,20 +72,45 @@ const Chat = () => {
     setNewMessageText(ev.target.value);
   }
 
-  async function handleMessageSend(ev) {
-    ev.preventDefault();
-    if (!newMessageText.trim()) return;
+  async function handleMessageSend(ev, file = null) {
+    if (ev) {
+      ev.preventDefault();
+    }
+    if (!newMessageText.trim() && !file.data) return;
 
     const message = {
       recipient: selectedContact,
       text: newMessageText.trim(),
       sender: id,
+      file,
       _id: Date.now(),
     };
 
     ws.send(JSON.stringify(message));
-    setNewMessageText('');
-    setMessages((prevMessages) => [...prevMessages, message]);
+
+    if (file.data) {
+      axios
+        .get(`/messages/${selectedContact}`)
+        .then((res) => {
+          let response = res.data;
+          console.log('response--->>>***&&&', response);
+          setMessages(response);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      setNewMessageText('');
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          recipient: selectedContact,
+          text: newMessageText.trim(),
+          sender: id,
+          _id: Date.now(),
+        },
+      ]);
+    }
   }
 
   function handleLogout() {
@@ -101,6 +126,20 @@ const Chat = () => {
       .catch((err) => {
         console.log(err);
       });
+  }
+
+  function handleFileUpload(ev) {
+    const file = ev?.target?.files[0];
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+
+    reader.onload = () => {
+      handleMessageSend(null, {
+        name: ev.target.files[0].name,
+        data: reader.result,
+      });
+    };
   }
 
   useEffect(() => {
@@ -229,6 +268,34 @@ const Chat = () => {
                         }`}
                       >
                         {message.text}
+                        {message.file && (
+                          <div className="">
+                            <a
+                              target={'_blank'}
+                              rel="noreferrer"
+                              className="border-b flex items-center gap-1"
+                              href={
+                                axios.defaults.baseURL +
+                                '/uploads/' +
+                                message.file
+                              }
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                                className="w-4 h-4"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M18.97 3.659a2.25 2.25 0 00-3.182 0l-10.94 10.94a3.75 3.75 0 105.304 5.303l7.693-7.693a.75.75 0 011.06 1.06l-7.693 7.693a5.25 5.25 0 11-7.424-7.424l10.939-10.94a3.75 3.75 0 115.303 5.304L9.097 18.835l-.008.008-.007.007-.002.002-.003.002A2.25 2.25 0 015.91 15.66l7.81-7.81a.75.75 0 011.061 1.06l-7.81 7.81a.75.75 0 001.054 1.068L18.97 6.84a2.25 2.25 0 000-3.182z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                              {message.file}
+                            </a>
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
@@ -251,10 +318,15 @@ const Chat = () => {
               value={newMessageText}
               onChange={onInputChanged}
             />
-            <button
+            <label
               type="button"
-              className="bg-blue-200 text-gray-600 p-2 rounded-sm border border-blue-300"
+              className="bg-blue-200 text-gray-600 p-2 rounded-sm border border-blue-300 cursor-pointer"
             >
+              <input
+                type="file"
+                className="hidden"
+                onChange={handleFileUpload}
+              />
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -267,7 +339,7 @@ const Chat = () => {
                   clipRule="evenodd"
                 />
               </svg>
-            </button>
+            </label>
             <button
               className="bg-blue-500 p-2 text-white rounded-sm"
               type="submit"
