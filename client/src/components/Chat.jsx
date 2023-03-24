@@ -43,6 +43,7 @@ const Chat = () => {
     };
   }
 
+  // to show online users
   function showOnlineUsers(onlineArr) {
     const people = {};
 
